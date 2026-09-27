@@ -5,12 +5,13 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, Request, status
 
 from app.db.store import store
+from app.schemas.common import PredictionResult
 from app.services.llm_summary_service import synthesize_summary
 
 router = APIRouter(prefix="/patients", tags=["predictions"])
 
 
-@router.post("/{patient_id}/predict")
+@router.post("/{patient_id}/predict", response_model=PredictionResult)
 async def predict(patient_id: str, request: Request):
     if patient_id not in store.patients:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"error": {"code": "patient_not_found", "message": "Patient not found.", "details": []}})

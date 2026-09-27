@@ -74,6 +74,8 @@ class PredictionResult(BaseModel):
     top_features: list[dict[str, float | str]]
     summary: str
     timestamp: datetime
+    feature_vector: dict[str, float] | None = None
+    uncertainty_method: str | None = None
 
 
 class PatientHistoryResponse(BaseModel):
@@ -83,7 +85,19 @@ class PatientHistoryResponse(BaseModel):
     readings: list[WearableReading]
 
 
+class PatientSummary(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    patient_id: str
+    age: int
+    sex: str
+    region: str
+    bmi: float
+    current_risk_score: float = Field(..., ge=0.0, le=1.0)
+    risk_tier: str
+
+
 class DashboardSummary(BaseModel):
     model_config = ConfigDict(extra="forbid")
     total_patients: int
     risk_counts: dict[str, int]
+    patients: list[PatientSummary]

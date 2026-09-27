@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException, Request, status
 
 from app.db.store import store
-from app.schemas.common import PatientCreateRequest, WearableReadingsRequest
+from app.schemas.common import PatientCreateRequest, PatientHistoryResponse, TwinState, WearableReadingsRequest
 
 router = APIRouter(prefix="/patients", tags=["patients"])
 
@@ -23,7 +23,7 @@ async def ingest_wearable_stream(patient_id: str, payload: WearableReadingsReque
     return {"patient_id": patient_id, "ingested_count": len(readings)}
 
 
-@router.get("/{patient_id}/twin-state")
+@router.get("/{patient_id}/twin-state", response_model=TwinState)
 async def twin_state(patient_id: str, request: Request):
     if patient_id not in store.patients:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"error": {"code": "patient_not_found", "message": "Patient not found.", "details": []}})
@@ -49,7 +49,7 @@ async def twin_state(patient_id: str, request: Request):
     }
 
 
-@router.get("/{patient_id}/history")
+@router.get("/{patient_id}/history", response_model=PatientHistoryResponse)
 async def history(patient_id: str):
     if patient_id not in store.patients:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"error": {"code": "patient_not_found", "message": "Patient not found.", "details": []}})
