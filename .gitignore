@@ -31,3 +31,4 @@ Thumbs.db
 backend/app/ml/artifacts/
 *.joblib
 *.pkl
+twinpulse-submission.zip
